@@ -5,6 +5,7 @@ import tkinter as tk
 from tkinter import filedialog
 import csv
 import numpy as np
+import copy
 
 
 class CustomerServiceCalls():
@@ -76,10 +77,112 @@ class CustomerServiceCalls():
 		plt.savefig('../plot1.jpg')
 		plt.show()
 
+	def callAnalysisByTime(self):
+		#Get the data from the file
+		list_times  = [] # Initial list of the company representatives, contains duplicates
+		#Get the file name 
+		file = self.openFile()
+		call_data = pd.read_csv(file) # Get the data frame
+		call_data_file = self.readFromFile(file) # Get the data in a list for computing purposes
+		call_data_file.pop(0) # Pop the header item. 
+		#Make a copy of the data file so that calculations do not affect it. 
+		for item in call_data_file:
+			list_times.append(item[2])
+		
+		# Get each unique time used 
+		unique_times = set (list_times)
+  
+		list_of_incoming_call_counts_per_unique_time = [] # List of incoming count calls per unique time. 
+		list_of_outgoing_call_counts_per_unique_time = [] # List of outgoing count calls per unique time. 
+		count_in = 0
+		count_out = 0
+		
+
+		#Convert the unique_rep from a tuple back to a list
+		unique_time_list = list(unique_times)
+		#Compute the count of calls.
+		for time in unique_time_list:
+			for item in call_data_file:
+				if (item[3] == 'Outgoing' and time == item[2]):
+					count_out += 1
+				elif (item[3] == 'Incoming' and  time == item[2] ):
+					count_in += 1
+			 
+			list_of_incoming_call_counts_per_unique_time.append (count_in)
+			list_of_outgoing_call_counts_per_unique_time.append(count_out)
+			# Relist_of_outgoing_call_counts_per_unique_timesetting the counts for the next representative.
+			count_in = 0
+			count_out = 0
+		
+		# Setting the axis for my two plots
+		x = call_data['Time Block'].unique()
+		y1 = list_of_incoming_call_counts_per_unique_time
+		y2 = list_of_outgoing_call_counts_per_unique_time
+		#Arrange the display on the bar chart 
+		X_axis = np.arange(len(x))
+		plt.plot(x, y1, color ='blue',  label= 'Incoming Calls')
+		plt.plot(x, y2, color ='orange', label= 'Outgoing Calls')
+		plt.xlabel('Time Block')
+		plt.ylabel('Number of Calls')
+		plt.title('Total Number of Calls By Time Block')
+		plt.xticks(rotation=45)
+		#Save the chart
+		plt.savefig('../plot2.jpg')
+		plt.show()
+
+
+	def timeHistogram(self):
+		#Get the data from the file
+		list_times  = [] # Initial list of the company representatives, contains duplicates
+		#Get the file name 
+		file = self.openFile()
+		call_data = pd.read_csv(file) # Get the data frame
+		call_data_file = self.readFromFile(file) # Get the data in a list for computing purposes
+		call_data_file.pop(0) # Pop the header item. 
+		#Make a copy of the data file so that calculations do not affect it. 
+		for item in call_data_file:
+			list_times.append(item[2])
+		
+		# Get each unique time used 
+		unique_times = set (list_times)
+  
+		list_of_call_counts_per_unique_time = [] # List of count calls per unique time. 
+		count = 0
+		
+
+		#Convert the unique_rep from a tuple back to a list
+		unique_time_list = list(unique_times)
+		#Compute the count of calls.
+		for time in unique_time_list:
+			for item in call_data_file:
+				if (time == item[2]):
+					count += 1
+			list_of_call_counts_per_unique_time.append (count)
+			count = 0 # Resetting the count for each time frame
+		
+		# Setting the axis for my two plots
+		x = call_data['Time Block'].unique()
+		y = list_of_call_counts_per_unique_time
+		
+		#Arrange the display on the bar chart 
+		X_axis = np.arange(len(x))
+		plt.bar(x, y, color ='blue',  label= 'Incoming Calls')
+		plt.xlabel('Time Block')
+		plt.ylabel('Number of Calls')
+		plt.title('Histogram Time Block')
+		plt.xticks(rotation=45)
+		#Save the chart
+		plt.savefig('../plot3.jpg')
+		plt.show()
+
+
+
 
 def main ():
 	my_customer_calls = CustomerServiceCalls()
 	my_customer_calls.callAnalysisByRep()
+	my_customer_calls.callAnalysisByTime()
+	my_customer_calls.timeHistogram()
 
 if __name__=='__main__':
 	main()
