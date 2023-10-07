@@ -1,47 +1,80 @@
 import matplotlib.pyplot as plt
-import datetime;
-import csv;
-import copy;
+import datetime
+import pandas as pd
 import tkinter as tk
 from tkinter import filedialog
+import csv
 
 
 class CustomerServiceCalls():
+	def openFile(self):
+		filename = filedialog.askopenfilename(initialdir = "C:/Users/Anicet/Documents/ESU/IS 826 OA",
+										  title = "Select a File",
+										  filetypes = (('text files', '*.txt'),
+													   ("all files",
+														"*.*")))
+		return filename
+	
+	def readFromFile(self, filename): 
+		grades = []
+		with open(filename, newline="") as file: 
+			reader = csv.reader(file) 
+			for row in reader: grades.append(row)
+		return grades
+	
+	def callAnalysisByRep(self):
+		#Get the data from the file
+		list_rep  = [] # Initial list of the company representatives, contains duplicates
+		#Get the file name 
+		file = self.openFile()
+		call_data = pd.read_csv(file) # Get the data frame
+		call_data_file = self.readFromFile(file) # Get the data in a list for computing purposes
+		call_data_file.pop(0) # Pop the first item in the list since it is only the header. 
+		for item in call_data_file:
+			list_rep.append(item[len(item)-1])
 
-
-    def readFromFile(self,filename): 
-        call_data = []
-        with open(filename, newline="") as file: 
-            reader = csv.reader(file) 
-            for row in reader: call_data.append(row)
-        return call_data
-    
-    
-    def openFile(self):
-        filename = filedialog.askopenfilename(initialdir = "C:/Users/Anicet/Documents/ESU/IS 826 OA",
-                                          title = "Select a File",
-                                          filetypes = (('text files', '*.txt'),
-                                                       ("all files",
-                                                        "*.*")))
-        file_read = self.readFromFile(filename)
-        return file_read
-    
-    def callAnalysisByRep(self):
-        #Get the data from the file
-        call_data = self.openFile()
-        print ('The list :' )
-        print (call_data)
+		unique_rep = set (list_rep)
+  
+		list_of_outgoing_calls_per_rep = [] # List of outgoing call counts per representative
+		list_of_incoming_calls_per_rep  = [] # List of incoming call counts per representative
+		count_in = 0 # Count of incoming calls.
+		count_out = 0 # count of outgoing calls. 
+        
+		#Convert the unique_rep from a tuple back to a list
+		unique_rep_list = list(unique_rep)
+		#Compute the count of calls.
+		for name in unique_rep_list:
+			for item in call_data_file:
+				if (item[3] == 'Outgoing' and item[len(item)- 1] == name):
+					count_out += 1
+				if (item[3] == 'Incoming' and item[len(item)- 1] == name):
+					count_out += 1
+				   
+			list_of_incoming_calls_per_rep.append (count_in)
+			list_of_outgoing_calls_per_rep.append(count_out)
+		# Setting the axis for my two plots
+		x = call_data['Rep ID'].unique()
+		y1 = list_of_incoming_calls_per_rep
+		y2 = list_of_outgoing_calls_per_rep
+		plt.bar(x, y1, color ='blue', label= 'Incoming Calls')
+		plt.bar(x, y2, color ='orange', label= 'Outgoing Calls')
+		plt.xlabel('Representative')
+		plt.ylabel('Number of Calls')
+		plt.title('Total Number of Calls By Representative')
+		plt.xticks(rotation=45)
+		plt.legend()
+		plt.show()
 
 
 def main ():
-    my_customer_calls = CustomerServiceCalls()
-    my_customer_calls.callAnalysisByRep()
+	my_customer_calls = CustomerServiceCalls()
+	my_customer_calls.callAnalysisByRep()
 
 if __name__=='__main__':
-    main()
+	main()
 
 
 
-    
+	
 
 
