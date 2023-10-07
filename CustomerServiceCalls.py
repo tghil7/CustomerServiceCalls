@@ -4,6 +4,7 @@ import pandas as pd
 import tkinter as tk
 from tkinter import filedialog
 import csv
+import numpy as np
 
 
 class CustomerServiceCalls():
@@ -47,22 +48,32 @@ class CustomerServiceCalls():
 			for item in call_data_file:
 				if (item[3] == 'Outgoing' and item[len(item)- 1] == name):
 					count_out += 1
-				if (item[3] == 'Incoming' and item[len(item)- 1] == name):
-					count_out += 1
-				   
+				elif (item[3] == 'Incoming' and item[len(item)- 1] == name):
+					count_in += 1
+			'''print ('Name: ' + name)	
+			print ('Count In: ' + str(count_in)) 
+			print ('Count Out: ' + str(count_out)) '''   
 			list_of_incoming_calls_per_rep.append (count_in)
 			list_of_outgoing_calls_per_rep.append(count_out)
+			# Resetting the counts for the next representative.
+			count_in = 0
+			count_out = 0
 		# Setting the axis for my two plots
 		x = call_data['Rep ID'].unique()
 		y1 = list_of_incoming_calls_per_rep
 		y2 = list_of_outgoing_calls_per_rep
-		plt.bar(x, y1, color ='blue', label= 'Incoming Calls')
-		plt.bar(x, y2, color ='orange', label= 'Outgoing Calls')
+
+		#Arrange the display on the bar chart 
+		X_axis = np.arange(len(x))
+		bar_width = 0.5
+		plt.bar(X_axis - 0.2, y1, color ='blue', width = bar_width, label= 'Incoming Calls')
+		plt.bar(X_axis + 0.2, y2, color ='orange',width = bar_width, label= 'Outgoing Calls')
 		plt.xlabel('Representative')
 		plt.ylabel('Number of Calls')
 		plt.title('Total Number of Calls By Representative')
-		plt.xticks(rotation=45)
-		plt.legend()
+		plt.xticks(X_axis, x, rotation=45)
+		#Save the chart
+		plt.savefig('../plot1.jpg')
 		plt.show()
 
 
