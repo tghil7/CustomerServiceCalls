@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import datetime
 import pandas as pd
 import tkinter as tk
-from tkinter import ttk
 from tkinter import *
 from PIL import ImageTk, Image
 from tkinter import filedialog
@@ -82,7 +81,7 @@ class CustomerServiceCalls():
 		plt.title('Total Number of Calls By Representative')
 		plt.xticks(X_axis, x, rotation=45)
 		#Save the chart
-		plt.savefig('../plot1.jpg')
+		plt.savefig('plot1.jpg')
 		plt.show()
 
 	def callAnalysisByTime(self):
@@ -135,7 +134,7 @@ class CustomerServiceCalls():
 		plt.title('Total Number of Calls By Time Block')
 		plt.xticks(rotation=45)
 		#Save the chart
-		plt.savefig('../plot2.jpg')
+		plt.savefig('plot2.jpg')
 		plt.show()
 
 
@@ -179,7 +178,7 @@ class CustomerServiceCalls():
 		plt.title('Histogram Time Block')
 		plt.xticks(rotation=45)
 		#Save the chart
-		plt.savefig('../plot3.jpg')
+		plt.savefig('plot3.jpg')
 		plt.show()
 
 	def callAnalysisByPurpose(self):
@@ -214,44 +213,59 @@ class CustomerServiceCalls():
 		# Setting the axis for my two plots
 		x = list_of_call_counts_per_unique_purpose
 		y = call_data['Call Purpose'].unique()
-		print ('X :' + str(x))
-		print ('Y : ' + str(y))
 		
 		#Arrange the display on the bar chart 
 		plt.pie(x, labels= y, autopct='%1.2f%%')
 		plt.title('Volume of Calls by Call Purpose')
 		#Save the chart
-		plt.savefig('../plot4.jpg')
+		plt.savefig('plot4.jpg')
 		plt.show()
 
 	def createDashboard(self):
 		#Create the interface
 		m.title ('Dashboard for Customer Service Performance Analysis.')
 		m.geometry ('1200x900')
-		welcome_frame = ttk.LabelFrame(m)
-		welcome_frame.pack(padx=10, pady=10, fill="both")
+		# Create a label frame for the "Welcome" text
+		welcome_frame = LabelFrame(m)
+		welcome_frame.pack(fill="both", padx=10, pady=10)
 
-		# Create objects of tkinter ImageTk
-		img1 = "../plot1.jpg"
-		img2 = "../plot2.jpg"
-		img3 = "../plot3.jpg"
-		img4 = "../plot4.jpg"
-		# Display the header message
-		welcome_label = ttk.Label(welcome_frame, text="Dashboard for Customer Service Performance Analysis")
+		# Create a label with the "Welcome" text inside the label frame
+		welcome_label = Label(welcome_frame, text="Dashboard for Customer Service Performance Analysis")
 		welcome_label.pack(padx=10, pady=10)
-		#New frame to display the images
-		csv_frame = ttk.Frame(m)
-		csv_frame.pack(padx=10, pady=10, fill="both", expand="yes")
-		image1_label = ttk.Label(csv_frame,image=img1)
-		image2_label = ttk.Label(csv_frame,image=img2)
-		image3_label = ttk.Label(csv_frame,image=img3)
-		image4_label = ttk.Label(csv_frame,image=img4)
-		#Add the labels to the frame CSV
-		image1_label.pack(side="left")
-		image2_label.pack(side="right")
-		image3_label.pack(side="left")
-		image4_label.pack(side="right")
-		
+
+		# Create a frame for the images
+		image_frame = LabelFrame(m, text="Image Gallery")
+		image_frame.pack(fill="both", expand="yes", padx=10, pady=10)
+
+		# Load and display the .jpg images
+		image_filenames = ["plot1.jpg", "plot2.jpg", "plot3.jpg", "plot4.jpg"]
+		img1 = Image.open("plot1.jpg")
+		img1=img1.resize((400, 400))
+		img1 = ImageTk.PhotoImage(img1)
+		img1_label = Label(image_frame, image=img1)
+		img1_label.image = img1
+		img1_label.pack(side="left", padx=5, pady=5)
+
+		img2 = Image.open("plot2.jpg")
+		img2=img2.resize((400, 400))
+		img2 = ImageTk.PhotoImage(img2)
+		img2_label = Label(image_frame, image=img2)
+		img2_label.image = img2
+		img2_label.pack(side="right", padx=5, pady=5)
+
+		img3 = Image.open("plot3.jpg")
+		img3 = img3.resize((400, 400))
+		img3 = ImageTk.PhotoImage(img3)
+		img3_label = Label(image_frame, image=img3)
+		img3_label.image = img3
+		img3_label.pack(side="left", padx=5, pady=5)
+
+		img4 = Image.open("plot4.jpg")
+		img4 = img4.resize((400, 400))
+		img4 = ImageTk.PhotoImage(img4)
+		img4_label = Label(image_frame, image=img4)
+		img4_label.image = img4
+		img4_label.pack(side="right", padx=5, pady=5)
 
 
 
