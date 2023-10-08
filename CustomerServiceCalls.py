@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import datetime
 import pandas as pd
 import tkinter as tk
+from tkinter import ttk
+from tkinter import *
 from tkinter import filedialog
 import csv
 import numpy as np
@@ -9,6 +11,9 @@ import copy
 
 
 class CustomerServiceCalls():
+	
+
+
 	def openFile(self):
 		filename = filedialog.askopenfilename(initialdir = "C:/Users/Anicet/Documents/ESU/IS 826 OA",
 										  title = "Select a File",
@@ -41,7 +46,7 @@ class CustomerServiceCalls():
 		list_of_incoming_calls_per_rep  = [] # List of incoming call counts per representative
 		count_in = 0 # Count of incoming calls.
 		count_out = 0 # count of outgoing calls. 
-        
+		
 		#Convert the unique_rep from a tuple back to a list
 		unique_rep_list = list(unique_rep)
 		#Compute the count of calls.
@@ -165,7 +170,7 @@ class CustomerServiceCalls():
 		y = list_of_call_counts_per_unique_time
 		
 		#Arrange the display on the bar chart 
-		plt.hist(x, bins=9, color='blue', edgecolor='black')
+		plt.hist(x, bins=y, color='blue', edgecolor='black')
 		plt.xlabel('Time Block')
 		plt.ylabel('Number of Calls')
 		plt.title('Histogram Time Block')
@@ -176,7 +181,7 @@ class CustomerServiceCalls():
 
 	def callAnalysisByPurpose(self):
 		#Get the data from the file
-		list_times  = [] # Initial list of the company representatives, contains duplicates
+		list_purposes  = [] # Initial list of the call purposes, contains duplicates
 		#Get the file name 
 		file = self.openFile()
 		call_data = pd.read_csv(file) # Get the data frame
@@ -184,48 +189,65 @@ class CustomerServiceCalls():
 		call_data_file.pop(0) # Pop the header item. 
 		#Make a copy of the data file so that calculations do not affect it. 
 		for item in call_data_file:
-			list_times.append(item[2])
+			list_purposes.append(item[1])
 		
 		# Get each unique time used 
-		unique_times = set (list_times)
+		unique_purposes = set (list_purposes)
   
-		list_of_call_counts_per_unique_time = [] # List of count calls per unique time. 
+		list_of_call_counts_per_unique_purpose = [] # List of count calls per unique time. 
 		count = 0
 		
 
 		#Convert the unique_rep from a tuple back to a list
-		unique_time_list = list(unique_times)
+		unique_purpose_list = list(unique_purposes)
 		#Compute the count of calls.
-		for time in unique_time_list:
+		for purpose in unique_purpose_list:
 			for item in call_data_file:
-				if (time == item[2]):
+				if (purpose == item[1]):
 					count += 1
-			list_of_call_counts_per_unique_time.append (count)
+			list_of_call_counts_per_unique_purpose.append (count)
 			count = 0 # Resetting the count for each time frame
-		
+		list_of_call_counts_per_unique_purpose.sort()
 		# Setting the axis for my two plots
-		x = call_data['Time Block'].unique()
-		y = list_of_call_counts_per_unique_time
+		x = list_of_call_counts_per_unique_purpose
+		y = call_data['Call Purpose'].unique()
+		print ('X :' + str(x))
+		print ('Y : ' + str(y))
 		
 		#Arrange the display on the bar chart 
-		X_axis = np.arange(len(x))
-		plt.bar(x, y, color ='blue',  label= 'Incoming Calls')
-		plt.xlabel('Time Block')
-		plt.ylabel('Number of Calls')
-		plt.title('Histogram Time Block')
-		plt.xticks(rotation=45)
+		plt.pie(x, labels= y, autopct='%1.2f%%')
+		plt.title('Volume of Calls by Call Purpose')
 		#Save the chart
-		plt.savefig('../plot3.jpg')
+		plt.savefig('../plot4.jpg')
 		plt.show()
+
+	def createDashboard(self):
+		#Create the interface
+		m = tk.Tk()  
+		m.title ('Dashboard for Customer Service Performance Analysis.')
+		m.geometry ('1200x 900')
+		welcome_frame = ttk.LabelFrame(m)
+		welcome_frame.pack(padx=10, pady=10, fill="both")
+
+		# Display the welcome message
+		welcome_label = ttk.Label(welcome_frame, text="Dashboard for Customer Service Performance Analysis")
+		welcome_label.pack(padx=10, pady=10)
+		
+		
+
+
+
+	
 
 
 
 
 def main ():
-	my_customer_calls = CustomerServiceCalls()
+	my_customer_calls = CustomerServiceCalls() # Create an instance of the class, and call each of its functions. 
 	#my_customer_calls.callAnalysisByRep()
 	#my_customer_calls.callAnalysisByTime()
-	my_customer_calls.timeHistogram()
+	#my_customer_calls.timeHistogram()
+	my_customer_calls.callAnalysisByPurpose()
 
 if __name__=='__main__':
 	main()
