@@ -4,11 +4,14 @@ import pandas as pd
 import tkinter as tk
 from tkinter import ttk
 from tkinter import *
+from PIL import ImageTk, Image
 from tkinter import filedialog
 import csv
 import numpy as np
 import copy
 
+
+m = tk.Tk()
 
 class CustomerServiceCalls():
 	
@@ -170,7 +173,7 @@ class CustomerServiceCalls():
 		y = list_of_call_counts_per_unique_time
 		
 		#Arrange the display on the bar chart 
-		plt.hist(x, bins=y, color='blue', edgecolor='black')
+		plt.hist(x, bins=len(y), color='blue', edgecolor='black')
 		plt.xlabel('Time Block')
 		plt.ylabel('Number of Calls')
 		plt.title('Histogram Time Block')
@@ -207,7 +210,7 @@ class CustomerServiceCalls():
 					count += 1
 			list_of_call_counts_per_unique_purpose.append (count)
 			count = 0 # Resetting the count for each time frame
-		list_of_call_counts_per_unique_purpose.sort()
+		list_of_call_counts_per_unique_purpose.sort() # Sorting to make sure the order of items displayed is preserved.
 		# Setting the axis for my two plots
 		x = list_of_call_counts_per_unique_purpose
 		y = call_data['Call Purpose'].unique()
@@ -223,16 +226,31 @@ class CustomerServiceCalls():
 
 	def createDashboard(self):
 		#Create the interface
-		m = tk.Tk()  
 		m.title ('Dashboard for Customer Service Performance Analysis.')
-		m.geometry ('1200x 900')
+		m.geometry ('1200x900')
 		welcome_frame = ttk.LabelFrame(m)
 		welcome_frame.pack(padx=10, pady=10, fill="both")
 
-		# Display the welcome message
+		# Create objects of tkinter ImageTk
+		img1 = "../plot1.jpg"
+		img2 = "../plot2.jpg"
+		img3 = "../plot3.jpg"
+		img4 = "../plot4.jpg"
+		# Display the header message
 		welcome_label = ttk.Label(welcome_frame, text="Dashboard for Customer Service Performance Analysis")
 		welcome_label.pack(padx=10, pady=10)
-		
+		#New frame to display the images
+		csv_frame = ttk.Frame(m)
+		csv_frame.pack(padx=10, pady=10, fill="both", expand="yes")
+		image1_label = ttk.Label(csv_frame,image=img1)
+		image2_label = ttk.Label(csv_frame,image=img2)
+		image3_label = ttk.Label(csv_frame,image=img3)
+		image4_label = ttk.Label(csv_frame,image=img4)
+		#Add the labels to the frame CSV
+		image1_label.pack(side="left")
+		image2_label.pack(side="right")
+		image3_label.pack(side="left")
+		image4_label.pack(side="right")
 		
 
 
@@ -244,13 +262,15 @@ class CustomerServiceCalls():
 
 def main ():
 	my_customer_calls = CustomerServiceCalls() # Create an instance of the class, and call each of its functions. 
-	#my_customer_calls.callAnalysisByRep()
-	#my_customer_calls.callAnalysisByTime()
-	#my_customer_calls.timeHistogram()
-	my_customer_calls.callAnalysisByPurpose()
+	'''my_customer_calls.callAnalysisByRep()
+	my_customer_calls.callAnalysisByTime()
+	my_customer_calls.timeHistogram()
+	my_customer_calls.callAnalysisByPurpose()'''
+	my_customer_calls.createDashboard()
 
 if __name__=='__main__':
 	main()
+	m.mainloop()
 
 
 
